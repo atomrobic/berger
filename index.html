@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gourmet Burger | The Art of Taste</title>
+    <meta name="description" content="Experience the ultimate artisan burger with our premium, scroll-animated culinary journey.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">LUXE<span>BURGER</span></div>
+        <div class="nav-links">
+            <a href="#menu">Menu</a>
+            <a href="#about">Our Story</a>
+            <a href="#reservation">Reservations</a>
+        </div>
+        <button class="cta-nav">Order Now</button>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1 class="fade-in">Crafting Perfection</h1>
+                <p class="tagline fade-in">The most immersive burger experience in the city.</p>
+                <div class="hero-btns fade-in">
+                    <button class="btn primary" id="order-now">Order Now</button>
+                    <button class="btn secondary" id="view-menu">View Menu</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Animation Section -->
+        <section class="animation-container" id="animation">
+            <div class="sticky-wrapper">
+                <canvas id="burger-canvas"></canvas>
+
+                <div class="scroll-label">
+                    <span class="label-text">Scroll to craft your burger</span>
+                    <div class="mouse-icon"></div>
+                </div>
+            </div>
+            <!-- This provides the height needed for the scroll animation -->
+            <div class="scroll-spacer"></div>
+        </section>
+
+        <!-- Placeholder for Menu/Content -->
+        <section class="content-section" id="menu">
+            <div class="section-overlay">
+                <h2>Our Signature Ingredients</h2>
+                <p>Every layer is a masterpiece. Sourced locally, prepared with precision.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 LUXE BURGER. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
