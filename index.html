@@ -34,57 +34,61 @@
             </div>
         </section>
 
-        <!-- Animation Section -->
-        <section class="animation-container" id="animation">
-            <div class="sticky-wrapper">
-                <canvas id="burger-canvas"></canvas>
-
-            </div>
-            <!-- This provides the height needed for the scroll animation -->
-            <div class="scroll-spacer"></div>
-        </section>
-
-        <!-- Placeholder for Menu/Content -->
-        <section class="content-section" id="menu">
-            <div class="menu-shell">
-                <div class="menu-head">
-                    <p class="eyebrow">Burger Details</p>
-                    <h2>Signature Builds & Combos</h2>
-                    <p>Premium ingredients, bold textures, and combo sets crafted for quick ordering.</p>
-                </div>
-
-                <div class="menu-grid">
-                    <article class="menu-card">
-                        <h3>The Luxe Stack</h3>
+        <!-- Bento Grid Section -->
+        <section class="bento-section" id="menu">
+            <div class="bento-grid">
+                <!-- Signature Stack Frame (Left) -->
+                <div class="bento-tile stack-frame">
+                    <div class="tile-content">
+                        <p class="eyebrow">Ingredients</p>
+                        <h2>The Luxe Stack</h2>
                         <ul class="detail-list">
-                            <li><span>Patty</span><strong>Smoked Angus Double</strong></li>
-                            <li><span>Cheese</span><strong>Aged Cheddar + Swiss</strong></li>
-                            <li><span>Sauce</span><strong>Roasted Garlic Aioli</strong></li>
-                            <li><span>Crunch</span><strong>Onion Crisp + Pickle</strong></li>
-                            <li><span>Bun</span><strong>Toasted Brioche</strong></li>
+                            <li><span>Patty</span><strong>Angus Double</strong></li>
+                            <li><span>Cheese</span><strong>Cheddar + Swiss</strong></li>
+                            <li><span>Sauce</span><strong>Garlic Aioli</strong></li>
+                            <li><span>Crunch</span><strong>Onion + Pickle</strong></li>
                         </ul>
-                    </article>
+                    </div>
+                </div>
 
-                    <article class="menu-card combo-card">
-                        <h3>Combo Picks</h3>
-                        <div class="combo-list">
-                            <div class="combo-pill">
-                                <span class="combo-name">Classic Combo</span>
-                                <span class="combo-meta">Burger + Fries + Cola</span>
-                            </div>
-                            <div class="combo-pill">
-                                <span class="combo-name">Cheese Lover</span>
-                                <span class="combo-meta">Triple Cheese + Curly Fries</span>
-                            </div>
-                            <div class="combo-pill">
-                                <span class="combo-name">Fire Bite</span>
-                                <span class="combo-meta">Spicy Stack + Dip + Soda</span>
-                            </div>
-                        </div>
-                    </article>
+                <!-- Burger Animation Frame (Center) -->
+                <div class="bento-tile animation-frame">
+                    <div class="tile-header mobile-only">
+                        <p class="eyebrow">The Masterpiece</p>
+                        <h3>Interactive Build</h3>
+                    </div>
+                    <canvas id="burger-canvas"></canvas>
+                    <div class="tile-overlay desktop-only">
+                        <p class="eyebrow">The Masterpiece</p>
+                        <h3>Interactive Build</h3>
+                    </div>
+                </div>
+
+                <!-- Combo Feature Frames (Right & Sides) -->
+                <div class="bento-tile combo-tile classic">
+                    <div class="combo-info">
+                        <span class="combo-tag">Classic</span>
+                        <p>Burger + Fries + Cola</p>
+                    </div>
+                </div>
+
+                <div class="bento-tile combo-tile cheese">
+                    <div class="combo-info">
+                        <span class="combo-tag">Cheese</span>
+                        <p>Triple Cheese + Fries</p>
+                    </div>
+                </div>
+
+                <div class="bento-tile combo-tile fire">
+                    <div class="combo-info">
+                        <span class="combo-tag">Fire</span>
+                        <p>Spicy + Dip + Soda</p>
+                    </div>
                 </div>
             </div>
         </section>
+
+
     </main>
 
     <footer class="footer">

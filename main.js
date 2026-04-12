@@ -1,12 +1,11 @@
 const canvas = document.getElementById('burger-canvas');
 const context = canvas.getContext('2d');
 
-const frameCount = 240;
+const frameCount = 170;
 const frameFolders = [
-    'ezgif-2288a3f307e0475d-jpg',
-    'ezgif-751c9eb1051126ed-png-split'
+    'ezgif-251776a34449078d-jpg'
 ];
-const framePathCandidates = ['/frames', '/public/frames', 'frames', 'public/frames'];
+const framePathCandidates = ['public/frames', '/public/frames', 'frames', '/frames'];
 const frameExtensions = ['jpg', 'jpeg', 'png'];
 let activeFrameBasePath = '';
 const frameBaseName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}`;
@@ -86,23 +85,45 @@ function resizeCanvas() {
 
 window.addEventListener('resize', resizeCanvas);
 
-// Scroll Handling
+// Scroll Handling - Localized to Bento Section
+const bentoSection = document.querySelector('.bento-section');
+
 function updateScroll() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
-    const doc = document.documentElement;
-    const scrollRange = Math.max(1, doc.scrollHeight - window.innerHeight);
-    let scrollFraction = scrollTop / scrollRange;
+    if (!bentoSection) return;
+
+    const rect = bentoSection.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    
+    // Calculate progress based on when the section enters from bottom to when it leaves top
+    // Start animation when section top is at 80% of window height
+    // End animation when section bottom is at 20% of window height
+    const startOffset = windowHeight * 0.8;
+    const endOffset = windowHeight * 0.2;
+    
+    const progressStart = rect.top - startOffset;
+    const scrollRange = rect.height + startOffset - endOffset;
+    
+    let scrollFraction = -progressStart / scrollRange;
     scrollFraction = Math.max(0, Math.min(1, scrollFraction));
 
-    // Direct mapping for normal page scroll behavior.
+    // Map to burger frames
     burger.frame = scrollFraction * (frameCount - 1);
     burger.targetFrame = burger.frame;
     renderBurger();
 }
 
 let scrollTicking = false;
+let isSectionVisible = false;
+
+// Optimization: Only listen to scroll if section is in view
+const observer = new IntersectionObserver((entries) => {
+    isSectionVisible = entries[0].isIntersecting;
+}, { threshold: 0 });
+
+if (bentoSection) observer.observe(bentoSection);
+
 window.addEventListener('scroll', () => {
-    if (scrollTicking) return;
+    if (!isSectionVisible || scrollTicking) return;
     scrollTicking = true;
     requestAnimationFrame(() => {
         updateScroll();
@@ -125,17 +146,15 @@ function renderBurger() {
 
         // Fit image into a target viewport zone with mobile-first tuning.
         const isMobile = window.innerWidth <= 768;
-        const maxWidth = canvasWidth * 0.98;
+        const maxWidth = canvasWidth * (isMobile ? 1.0 : 0.98); // Edge-to-edge on mobile
         const maxHeight = canvasHeight * (isMobile ? 0.98 : 0.96);
         const fitScale = Math.min(maxWidth / frameToDraw.width, maxHeight / frameToDraw.height);
-        const mobileScaleBoost = isMobile ? 1.5 : 1;
-        const drawWidth = frameToDraw.width * fitScale * mobileScaleBoost;
-        const drawHeight = frameToDraw.height * fitScale * mobileScaleBoost;
+        const scaleBoost = isMobile ? 1.55 : 1; // High boost for 'Max Fit'
+        const drawWidth = frameToDraw.width * fitScale * scaleBoost;
+        const drawHeight = frameToDraw.height * fitScale * scaleBoost;
 
-        // Lift burger slightly on mobile for better visual centering.
-        const yOffset = isMobile ? -canvasHeight * 0.03 : 0;
         const x = (canvasWidth - drawWidth) / 2;
-        const y = (canvasHeight - drawHeight) / 2 + yOffset;
+        const y = (canvasHeight - drawHeight) / 2;
 
         context.drawImage(frameToDraw, x, y, drawWidth, drawHeight);
     } else {
