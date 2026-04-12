@@ -39,10 +39,6 @@
             <div class="sticky-wrapper">
                 <canvas id="burger-canvas"></canvas>
 
-                <div class="scroll-label">
-                    <span class="label-text">Scroll to craft your burger</span>
-                    <div class="mouse-icon"></div>
-                </div>
             </div>
             <!-- This provides the height needed for the scroll animation -->
             <div class="scroll-spacer"></div>
@@ -50,9 +46,43 @@
 
         <!-- Placeholder for Menu/Content -->
         <section class="content-section" id="menu">
-            <div class="section-overlay">
-                <h2>Our Signature Ingredients</h2>
-                <p>Every layer is a masterpiece. Sourced locally, prepared with precision.</p>
+            <div class="menu-shell">
+                <div class="menu-head">
+                    <p class="eyebrow">Burger Details</p>
+                    <h2>Signature Builds & Combos</h2>
+                    <p>Premium ingredients, bold textures, and combo sets crafted for quick ordering.</p>
+                </div>
+
+                <div class="menu-grid">
+                    <article class="menu-card">
+                        <h3>The Luxe Stack</h3>
+                        <ul class="detail-list">
+                            <li><span>Patty</span><strong>Smoked Angus Double</strong></li>
+                            <li><span>Cheese</span><strong>Aged Cheddar + Swiss</strong></li>
+                            <li><span>Sauce</span><strong>Roasted Garlic Aioli</strong></li>
+                            <li><span>Crunch</span><strong>Onion Crisp + Pickle</strong></li>
+                            <li><span>Bun</span><strong>Toasted Brioche</strong></li>
+                        </ul>
+                    </article>
+
+                    <article class="menu-card combo-card">
+                        <h3>Combo Picks</h3>
+                        <div class="combo-list">
+                            <div class="combo-pill">
+                                <span class="combo-name">Classic Combo</span>
+                                <span class="combo-meta">Burger + Fries + Cola</span>
+                            </div>
+                            <div class="combo-pill">
+                                <span class="combo-name">Cheese Lover</span>
+                                <span class="combo-meta">Triple Cheese + Curly Fries</span>
+                            </div>
+                            <div class="combo-pill">
+                                <span class="combo-name">Fire Bite</span>
+                                <span class="combo-meta">Spicy Stack + Dip + Soda</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </div>
         </section>
     </main>

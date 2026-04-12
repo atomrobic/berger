@@ -49,89 +49,74 @@ function preloadImages() {
 
 // Set canvas dimensions
 function resizeCanvas() {
-    // High DPI support
+    // High DPI support based on actual rendered canvas size.
+    const rect = canvas.getBoundingClientRect();
     const scale = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * scale;
-    canvas.height = window.innerHeight * scale;
-    context.scale(scale, scale);
+    canvas.width = Math.max(1, Math.floor(rect.width * scale));
+    canvas.height = Math.max(1, Math.floor(rect.height * scale));
+    context.setTransform(scale, 0, 0, scale, 0, 0);
     renderBurger();
 }
 
 window.addEventListener('resize', resizeCanvas);
 
 // Scroll Handling
-const animationSection = document.querySelector('.animation-container');
-const scrollSpacer = document.querySelector('.scroll-spacer');
-
 function updateScroll() {
-    const sectionTop = animationSection.offsetTop;
-    const sectionHeight = scrollSpacer.offsetHeight;
-    const scrollPos = window.pageYOffset - sectionTop;
-    
-    // Percentage through the scroll spacer
-    let scrollFraction = scrollPos / sectionHeight;
-    
-    // Clamp between 0 and 1
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+    const doc = document.documentElement;
+    const scrollRange = Math.max(1, doc.scrollHeight - window.innerHeight);
+    let scrollFraction = scrollTop / scrollRange;
     scrollFraction = Math.max(0, Math.min(1, scrollFraction));
-    
-    // Set target frame
-    burger.targetFrame = Math.floor(scrollFraction * (frameCount - 1));
-}
 
-window.addEventListener('scroll', updateScroll);
-
-// Smoothing Loop (Inertia)
-function animate() {
-    // Smoother transition: LERP (Linear Interpolation)
-    const easing = 0.1; // Adjust for more/less inertia
-    burger.frame += (burger.targetFrame - burger.frame) * easing;
-    
+    // Direct mapping for normal page scroll behavior.
+    burger.frame = scrollFraction * (frameCount - 1);
+    burger.targetFrame = burger.frame;
     renderBurger();
-    requestAnimationFrame(animate);
 }
+
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+        updateScroll();
+        scrollTicking = false;
+    });
+}, { passive: true });
 
 function renderBurger() {
     const frameIndex = Math.round(burger.frame);
     const img = images[frameIndex];
+    const scale = window.devicePixelRatio || 1;
+    const canvasWidth = canvas.width / scale;
+    const canvasHeight = canvas.height / scale;
     
     if (img && img.complete) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
         
-        // Draw image centered and contained
-        const imgRatio = img.width / img.height;
-        const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
-        const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
-        const canvasRatio = canvasWidth / canvasHeight;
-        
-        let drawWidth, drawHeight;
-        
-        if (imgRatio > canvasRatio) {
-            drawWidth = canvasWidth;
-            drawHeight = canvasWidth / imgRatio;
-        } else {
-            drawHeight = canvasHeight;
-            drawWidth = canvasHeight * imgRatio;
-        }
-        
-        // Standard Zoom for Mobile (Balanced)
+        // Fit image into a target viewport zone with mobile-first tuning.
         const isMobile = window.innerWidth <= 768;
-        const zoom = isMobile ? 1.8 : 1.0; // Zoom in 80% on mobile
-        
-        const drawWidthZoomed = drawWidth * zoom;
-        const drawHeightZoomed = drawHeight * zoom;
-        
-        const x = (canvasWidth - drawWidthZoomed) / 2;
-        const y = (canvasHeight - drawHeightZoomed) / 2;
-        
-        context.drawImage(img, x, y, drawWidthZoomed, drawHeightZoomed);
+        const maxWidth = canvasWidth * (isMobile ? 0.98 : 0.98);
+        const maxHeight = canvasHeight * (isMobile ? 0.98 : 0.96);
+        const fitScale = Math.min(maxWidth / img.width, maxHeight / img.height);
+        const mobileScaleBoost = isMobile ? 1.5 : 1;
+        const drawWidth = img.width * fitScale * mobileScaleBoost;
+        const drawHeight = img.height * fitScale * mobileScaleBoost;
+
+        // Lift burger slightly on mobile for better visual centering.
+        const yOffset = isMobile ? -canvasHeight * 0.03 : 0;
+        const x = (canvasWidth - drawWidth) / 2;
+        const y = (canvasHeight - drawHeight) / 2 + yOffset;
+
+        context.drawImage(img, x, y, drawWidth, drawHeight);
     } else {
         // Fallback for missing frames
         context.fillStyle = '#000';
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
         context.fillStyle = '#ff9500';
         context.font = '20px Outfit';
         context.textAlign = 'center';
-        context.fillText('Frames not found. Checked /frames and /public/frames.', canvas.width/(2 * (window.devicePixelRatio || 1)), canvas.height/(2 * (window.devicePixelRatio || 1)));
+        context.fillText('Frames not found. Checked /frames and /public/frames.', canvasWidth / 2, canvasHeight / 2);
     }
 }
 
@@ -140,7 +125,6 @@ detectFrameBasePath().then((basePath) => {
     activeFrameBasePath = basePath;
     preloadImages();
     resizeCanvas();
-    animate();
     updateScroll();
     renderBurger();
 });
