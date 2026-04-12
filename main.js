@@ -3,10 +3,11 @@ const context = canvas.getContext('2d');
 
 const frameCount = 240;
 const frameFolder = 'ezgif-751c9eb1051126ed-png-split';
-const framePathCandidates = ['/frames', '/public/frames'];
-let activeFrameBasePath = framePathCandidates[0];
-const currentFrame = (index) => (
-    `${activeFrameBasePath}/${frameFolder}/ezgif-frame-${index.toString().padStart(3, '0')}.png`
+const framePathCandidates = ['/frames', '/public/frames', 'frames', 'public/frames'];
+let activeFrameBasePath = '';
+const frameFileName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}.png`;
+const frameUrls = (index) => framePathCandidates.map(
+    (basePath) => `${basePath}/${frameFolder}/${frameFileName(index)}`
 );
 
 // Preloading images
@@ -16,33 +17,37 @@ const burger = {
     targetFrame: 0
 };
 
-async function detectFrameBasePath() {
-    for (const candidate of framePathCandidates) {
-        const probeUrl = `${candidate}/${frameFolder}/ezgif-frame-001.png`;
-        try {
-            const response = await fetch(probeUrl, { method: 'HEAD' });
-            if (response.ok) {
-                return candidate;
-            }
-        } catch (_error) {
-            // Ignore and continue to next candidate path.
-        }
-    }
-
-    return framePathCandidates[0];
-}
-
 function preloadImages() {
-    let loadedImages = 0;
+    let completedImages = 0;
+
     for (let i = 1; i <= frameCount; i++) {
         const img = new Image();
-        img.src = currentFrame(i);
+        const candidates = frameUrls(i);
+        let candidateIndex = 0;
+
+        const tryNextPath = () => {
+            if (candidateIndex >= candidates.length) {
+                completedImages++;
+                return;
+            }
+
+            const nextUrl = candidates[candidateIndex];
+            candidateIndex++;
+            img.src = nextUrl;
+        };
+
         img.onload = () => {
-            loadedImages++;
-            if (loadedImages === frameCount) {
-                console.log(`All frames loaded from ${activeFrameBasePath}`);
+            completedImages++;
+            if (!activeFrameBasePath && candidateIndex > 0) {
+                const matched = candidates[candidateIndex - 1];
+                activeFrameBasePath = matched.split(`/${frameFolder}/`)[0];
+            }
+            if (completedImages === frameCount) {
+                console.log(`Frame preload complete. Active path: ${activeFrameBasePath || 'none'}`);
             }
         };
+        img.onerror = tryNextPath;
+        tryNextPath();
         images.push(img);
     }
 }
@@ -91,7 +96,7 @@ function renderBurger() {
     const canvasWidth = canvas.width / scale;
     const canvasHeight = canvas.height / scale;
     
-    if (img && img.complete) {
+    if (img && img.complete && img.naturalWidth > 0) {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
         
         // Fit image into a target viewport zone with mobile-first tuning.
@@ -116,15 +121,12 @@ function renderBurger() {
         context.fillStyle = '#ff9500';
         context.font = '20px Outfit';
         context.textAlign = 'center';
-        context.fillText('Frames not found. Checked /frames and /public/frames.', canvasWidth / 2, canvasHeight / 2);
+        context.fillText('Frames not found. Checked multiple frame paths.', canvasWidth / 2, canvasHeight / 2);
     }
 }
 
 // Initial calls
-detectFrameBasePath().then((basePath) => {
-    activeFrameBasePath = basePath;
-    preloadImages();
-    resizeCanvas();
-    updateScroll();
-    renderBurger();
-});
+preloadImages();
+resizeCanvas();
+updateScroll();
+renderBurger();
