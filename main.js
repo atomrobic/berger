@@ -2,8 +2,11 @@ const canvas = document.getElementById('burger-canvas');
 const context = canvas.getContext('2d');
 
 const frameCount = 240;
+const frameFolder = 'ezgif-751c9eb1051126ed-png-split';
+const framePathCandidates = ['/frames', '/public/frames'];
+let activeFrameBasePath = framePathCandidates[0];
 const currentFrame = (index) => (
-    `/frames/ezgif-751c9eb1051126ed-png-split/ezgif-frame-${index.toString().padStart(3, '0')}.png`
+    `${activeFrameBasePath}/${frameFolder}/ezgif-frame-${index.toString().padStart(3, '0')}.png`
 );
 
 // Preloading images
@@ -13,18 +16,35 @@ const burger = {
     targetFrame: 0
 };
 
-// Start Loading
-let loadedImages = 0;
-for (let i = 1; i <= frameCount; i++) {
-    const img = new Image();
-    img.src = currentFrame(i);
-    img.onload = () => {
-        loadedImages++;
-        if (loadedImages === frameCount) {
-            console.log('All frames loaded');
+async function detectFrameBasePath() {
+    for (const candidate of framePathCandidates) {
+        const probeUrl = `${candidate}/${frameFolder}/ezgif-frame-001.png`;
+        try {
+            const response = await fetch(probeUrl, { method: 'HEAD' });
+            if (response.ok) {
+                return candidate;
+            }
+        } catch (_error) {
+            // Ignore and continue to next candidate path.
         }
-    };
-    images.push(img);
+    }
+
+    return framePathCandidates[0];
+}
+
+function preloadImages() {
+    let loadedImages = 0;
+    for (let i = 1; i <= frameCount; i++) {
+        const img = new Image();
+        img.src = currentFrame(i);
+        img.onload = () => {
+            loadedImages++;
+            if (loadedImages === frameCount) {
+                console.log(`All frames loaded from ${activeFrameBasePath}`);
+            }
+        };
+        images.push(img);
+    }
 }
 
 // Set canvas dimensions
@@ -111,12 +131,16 @@ function renderBurger() {
         context.fillStyle = '#ff9500';
         context.font = '20px Outfit';
         context.textAlign = 'center';
-        context.fillText('Place your 240 frames in /public/frames/', canvas.width/(2 * (window.devicePixelRatio || 1)), canvas.height/(2 * (window.devicePixelRatio || 1)));
+        context.fillText('Frames not found. Checked /frames and /public/frames.', canvas.width/(2 * (window.devicePixelRatio || 1)), canvas.height/(2 * (window.devicePixelRatio || 1)));
     }
 }
 
 // Initial calls
-resizeCanvas();
-animate();
-updateScroll();
-renderBurger();
+detectFrameBasePath().then((basePath) => {
+    activeFrameBasePath = basePath;
+    preloadImages();
+    resizeCanvas();
+    animate();
+    updateScroll();
+    renderBurger();
+});
