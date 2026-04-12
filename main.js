@@ -2,13 +2,26 @@ const canvas = document.getElementById('burger-canvas');
 const context = canvas.getContext('2d');
 
 const frameCount = 240;
-const frameFolder = 'ezgif-751c9eb1051126ed-png-split';
+const frameFolders = [
+    'ezgif-2288a3f307e0475d-jpg',
+    'ezgif-751c9eb1051126ed-png-split'
+];
 const framePathCandidates = ['/frames', '/public/frames', 'frames', 'public/frames'];
+const frameExtensions = ['jpg', 'jpeg', 'png'];
 let activeFrameBasePath = '';
-const frameFileName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}.png`;
-const frameUrls = (index) => framePathCandidates.map(
-    (basePath) => `${basePath}/${frameFolder}/${frameFileName(index)}`
-);
+const frameBaseName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}`;
+const frameUrls = (index) => {
+    const baseName = frameBaseName(index);
+    const urls = [];
+    for (const basePath of framePathCandidates) {
+        for (const folder of frameFolders) {
+            for (const ext of frameExtensions) {
+                urls.push(`${basePath}/${folder}/${baseName}.${ext}`);
+            }
+        }
+    }
+    return urls;
+};
 
 // Preloading images
 const images = [];
@@ -41,7 +54,10 @@ function preloadImages() {
             completedImages++;
             if (!activeFrameBasePath && candidateIndex > 0) {
                 const matched = candidates[candidateIndex - 1];
-                activeFrameBasePath = matched.split(`/${frameFolder}/`)[0];
+                const matchedFolder = frameFolders.find((folder) => matched.includes(`/${folder}/`));
+                if (matchedFolder) {
+                    activeFrameBasePath = matched.split(`/${matchedFolder}/`)[0];
+                }
             }
             if (!lastRenderableImage) {
                 lastRenderableImage = img;
@@ -129,7 +145,7 @@ function renderBurger() {
         context.fillStyle = '#ff9500';
         context.font = '20px Outfit';
         context.textAlign = 'center';
-        context.fillText('Frames not found. Checked multiple frame paths.', canvasWidth / 2, canvasHeight / 2);
+        context.fillText('Frames not found. Checked JPG/JPEG/PNG paths.', canvasWidth / 2, canvasHeight / 2);
     }
 }
 
