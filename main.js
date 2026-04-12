@@ -16,6 +16,7 @@ const burger = {
     frame: 0,
     targetFrame: 0
 };
+let lastRenderableImage = null;
 
 function preloadImages() {
     let completedImages = 0;
@@ -41,6 +42,10 @@ function preloadImages() {
             if (!activeFrameBasePath && candidateIndex > 0) {
                 const matched = candidates[candidateIndex - 1];
                 activeFrameBasePath = matched.split(`/${frameFolder}/`)[0];
+            }
+            if (!lastRenderableImage) {
+                lastRenderableImage = img;
+                renderBurger();
             }
             if (completedImages === frameCount) {
                 console.log(`Frame preload complete. Active path: ${activeFrameBasePath || 'none'}`);
@@ -95,27 +100,30 @@ function renderBurger() {
     const scale = window.devicePixelRatio || 1;
     const canvasWidth = canvas.width / scale;
     const canvasHeight = canvas.height / scale;
-    
-    if (img && img.complete && img.naturalWidth > 0) {
+
+    const frameToDraw = (img && img.complete && img.naturalWidth > 0) ? img : lastRenderableImage;
+
+    if (frameToDraw && frameToDraw.complete && frameToDraw.naturalWidth > 0) {
+        lastRenderableImage = frameToDraw;
         context.clearRect(0, 0, canvasWidth, canvasHeight);
-        
+
         // Fit image into a target viewport zone with mobile-first tuning.
         const isMobile = window.innerWidth <= 768;
-        const maxWidth = canvasWidth * (isMobile ? 0.98 : 0.98);
+        const maxWidth = canvasWidth * 0.98;
         const maxHeight = canvasHeight * (isMobile ? 0.98 : 0.96);
-        const fitScale = Math.min(maxWidth / img.width, maxHeight / img.height);
+        const fitScale = Math.min(maxWidth / frameToDraw.width, maxHeight / frameToDraw.height);
         const mobileScaleBoost = isMobile ? 1.5 : 1;
-        const drawWidth = img.width * fitScale * mobileScaleBoost;
-        const drawHeight = img.height * fitScale * mobileScaleBoost;
+        const drawWidth = frameToDraw.width * fitScale * mobileScaleBoost;
+        const drawHeight = frameToDraw.height * fitScale * mobileScaleBoost;
 
         // Lift burger slightly on mobile for better visual centering.
         const yOffset = isMobile ? -canvasHeight * 0.03 : 0;
         const x = (canvasWidth - drawWidth) / 2;
         const y = (canvasHeight - drawHeight) / 2 + yOffset;
 
-        context.drawImage(img, x, y, drawWidth, drawHeight);
+        context.drawImage(frameToDraw, x, y, drawWidth, drawHeight);
     } else {
-        // Fallback for missing frames
+        // Show fallback only if no frame has ever loaded.
         context.fillStyle = '#000';
         context.fillRect(0, 0, canvasWidth, canvasHeight);
         context.fillStyle = '#ff9500';
