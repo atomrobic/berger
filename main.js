@@ -154,9 +154,19 @@ function renderBurger() {
         const drawHeight = frameToDraw.height * fitScale * scaleBoost;
 
         const x = (canvasWidth - drawWidth) / 2;
-        const y = (canvasHeight - drawHeight) / 2;
+        let y = (canvasHeight - drawHeight) / 2;
+        
+        if (isMobile) {
+            // Shift the burger up to compensate for 'Max Fit' scale pushing it off bottom
+            y -= drawHeight * 0.15; 
+        }
 
         context.drawImage(frameToDraw, x, y, drawWidth, drawHeight);
+        
+        // Hide Veo watermark with a black rectangle
+        context.fillStyle = '#000000';
+        // The watermark is typically in the bottom right of the drawn image
+        context.fillRect(x + drawWidth - 150, y + drawHeight - 80, 150, 80);
     } else {
         // Show fallback only if no frame has ever loaded.
         context.fillStyle = '#000';
@@ -173,3 +183,5 @@ preloadImages();
 resizeCanvas();
 updateScroll();
 renderBurger();
+
+
