@@ -95,7 +95,7 @@ body {
 }
 
 .top-marquee-section {
-  padding: 1.2rem 5% 0;
+  padding: 1.2rem 0 0;
 }
 
 .burger-marquee {
@@ -108,7 +108,7 @@ body {
   height: var(--marquee-height);
   overflow: hidden;
   position: relative;
-  border-radius: 18px;
+  border-radius: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(90deg, #090d16 0%, #0d111c 100%);
 }
