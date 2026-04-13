@@ -5,7 +5,7 @@ const frameCount = 240;
 const frameFolders = [
     'ezgif-31981f8e3c1ad0ef-jpg'
 ];
-const framePathCandidates = ['public/frames', '/public/frames', 'frames', '/frames'];
+const framePathCandidates = ['/frames'];
 const frameExtensions = ['jpg', 'jpeg', 'png'];
 let activeFrameBasePath = '';
 const frameBaseName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}`;
