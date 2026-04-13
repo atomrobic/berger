@@ -5,7 +5,7 @@ const frameCount = 240;
 const frameFolders = [
     'ezgif-31981f8e3c1ad0ef-jpg'
 ];
-const framePathCandidates = ['/frames'];
+const framePathCandidates = ['/dist/frames'];
 const frameExtensions = ['jpg', 'jpeg', 'png'];
 let activeFrameBasePath = '';
 const frameBaseName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}`;
@@ -183,5 +183,4 @@ preloadImages();
 resizeCanvas();
 updateScroll();
 renderBurger();
-
 
