@@ -1,9 +1,9 @@
 const canvas = document.getElementById('burger-canvas');
 const context = canvas.getContext('2d');
 
-const frameCount = 170;
+const frameCount = 240;
 const frameFolders = [
-    'ezgif-251776a34449078d-jpg'
+    'ezgif-31981f8e3c1ad0ef-jpg'
 ];
 const framePathCandidates = ['public/frames', '/public/frames', 'frames', '/frames'];
 const frameExtensions = ['jpg', 'jpeg', 'png'];
