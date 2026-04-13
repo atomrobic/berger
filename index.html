@@ -10,38 +10,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Poppins:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">LUXE<span>BURGER</span></div>
-        <div class="nav-links">
-            <a href="#menu">Menu</a>
-            <a href="#about">Our Story</a>
-            <a href="#reservation">Reservations</a>
-        </div>
-        <button class="cta-nav">Order Now</button>
-    </nav>
-
     <main>
+        <section class="top-marquee-section" aria-label="Popular Burgers">
+          <div class="burger-marquee">
+            <ul class="burger-marquee-content">
+              <li><img src="/dist/assets/burger_classic.png" alt="Classic burger"></li>
+              <li><img src="/dist/assets/burger_bbq.png" alt="BBQ burger"></li>
+              <li><img src="/dist/assets/burger_spicy.png" alt="Spicy burger"></li>
+              <li><img src="/dist/assets/burger_truffle.png" alt="Truffle burger"></li>
+              <li><img src="/dist/assets/main_hero_burger.png" alt="Hero burger"></li>
+              <li><img src="/dist/assets/burger_classic.png" alt="Classic burger"></li>
+              <li><img src="/dist/assets/burger_bbq.png" alt="BBQ burger"></li>
+              <li><img src="/dist/assets/burger_spicy.png" alt="Spicy burger"></li>
+            </ul>
+          </div>
+        </section>
+
         <!-- Hero Section -->
         <!-- Hero Section -->
         <section class="hero">
-          <div class="hero-left">
-            <div class="tagline"><span class="orange-line"></span>Premium Ingredients. Perfectly Crafted.</div>
-            <h1>CRAFTING<br>PERFECTION</h1>
-            <p class="sub-text">The most immersive burger experience in the city.</p>
-            <div class="hero-btns">
-              <button class="btn-main btn-orange">Order Now &nbsp; →</button>
-              <button class="btn-main btn-outline">View Menu</button>
+          <div class="hero-panel">
+            <div class="hero-topbar">
+              <div class="hero-brand">LUXE<span>BURGER</span></div>
+              <div class="hero-menu-links">
+                <a href="#">Home</a>
+                <a href="#menu">Menu</a>
+                <a href="#about">About</a>
+                <a href="#">Shop</a>
+              </div>
+              <div class="hero-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-user"></i>
+                <i class="fas fa-shopping-cart"></i>
+              </div>
             </div>
-          </div>
-          <div class="hero-right">
-            <img src="/dist/assets/main_hero_burger.png" alt="Featured Gourmet Burger">
-            <div class="badge-quality">
-              <span>🔥</span>
-              <br>100%<br>Premium Quality
+
+            <div class="hero-content">
+              <div class="hero-copy">
+                <h1>THE ULTIMATE<br>BURGER HAVEN</h1>
+                <p>
+                  Welcome to our Burger Paradise, where every bite is a journey into flavor perfection.
+                  Indulge in a symphony of premium ingredients and expertly crafted patties.
+                </p>
+                <div class="hero-btns">
+                  <button class="btn-main btn-orange">Order Now</button>
+                  <button class="btn-main btn-outline">View Menu</button>
+                </div>
+              </div>
+
+              <div class="hero-visual">
+                <img src="/dist/assets/main_hero_burger.png" alt="Featured Gourmet Burger">
+              </div>
+            </div>
+
+            <div class="hero-thumbs">
+              <button class="thumb"><img src="/dist/assets/burger_classic.png" alt="Classic burger"></button>
+              <button class="thumb"><img src="/dist/assets/burger_bbq.png" alt="BBQ burger"></button>
+              <button class="thumb active"><img src="/dist/assets/main_hero_burger.png" alt="Hero burger"></button>
+              <button class="thumb"><img src="/dist/assets/burger_spicy.png" alt="Spicy burger"></button>
+              <button class="thumb"><img src="/dist/assets/burger_truffle.png" alt="Truffle burger"></button>
             </div>
           </div>
         </section>
@@ -85,50 +117,50 @@
             <div class="bento-grid">
                 <!-- Left Stack -->
                 <div class="left-stack">
-                    <div class="menu-card">
-                        <div class="menu-card-img">
-                            <img src="https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg" alt="Burger" />
-                        </div>
-                        <button class="menu-card-btn"><i class="fas fa-shopping-cart"></i></button>
-                        <div class="menu-card-body">
-                            <div class="food-detail">
-                                <h4>Burger</h4>
-                                <p>Fresh & sweet</p>
+                    <div class="outer">
+                        <div class="inner" style="background: url('/dist/assets/burger_classic.png') no-repeat center center/cover;"></div>
+                        <div class="item">
+                            <div class="item-name">
+                                <h4>Classic Stack</h4>
+                                <p>Simple & juicy</p>
                             </div>
-                            <div class="food-price">
-                                <p>&#8377; 200</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="menu-card">
-                        <div class="menu-card-img">
-                            <img src="https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg" alt="Burger" />
-                        </div>
-                        <button class="menu-card-btn"><i class="fas fa-shopping-cart"></i></button>
-                        <div class="menu-card-body">
-                            <div class="food-detail">
-                                <h4>Burger</h4>
-                                <p>Fresh & sweet</p>
-                            </div>
-                            <div class="food-price">
-                                <p>&#8377; 200</p>
+                            <div class="item-price">
+                                <p>$ 10</p>
+                                <div class="rating">
+                                    <div></div><div></div><div></div><div></div><div></div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="menu-card">
-                        <div class="menu-card-img">
-                            <img src="https://images2.minutemediacdn.com/image/upload/c_crop,h_1126,w_2000,x_0,y_181/f_auto,q_auto,w_1100/v1554932288/shape/mentalfloss/12531-istock-637790866.jpg" alt="Burger" />
-                        </div>
-                        <button class="menu-card-btn"><i class="fas fa-shopping-cart"></i></button>
-                        <div class="menu-card-body">
-                            <div class="food-detail">
-                                <h4>Burger</h4>
-                                <p>Fresh & sweet</p>
+                    <div class="outer">
+                        <div class="inner" style="background: url('/dist/assets/burger_bbq.png') no-repeat center center/cover;"></div>
+                        <div class="item">
+                            <div class="item-name">
+                                <h4>BBQ Bacon</h4>
+                                <p>Smoky & crispy</p>
                             </div>
-                            <div class="food-price">
-                                <p>&#8377; 200</p>
+                            <div class="item-price">
+                                <p>$ 12</p>
+                                <div class="rating">
+                                    <div></div><div></div><div></div><div></div><div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="outer">
+                        <div class="inner" style="background: url('/dist/assets/burger_truffle.png') no-repeat center center/cover;"></div>
+                        <div class="item">
+                            <div class="item-name">
+                                <h4>Truffle Melt</h4>
+                                <p>Rich & gourmet</p>
+                            </div>
+                            <div class="item-price">
+                                <p>$ 14</p>
+                                <div class="rating">
+                                    <div></div><div></div><div></div><div></div><div></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -210,3 +242,4 @@
     <script type="module" src="main.js"></script>
 </body>
 </html>
+

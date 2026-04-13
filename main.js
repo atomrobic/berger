@@ -1,4 +1,26 @@
 (() => {
+    const marquee = document.querySelector('.burger-marquee');
+    const marqueeContent = document.querySelector('.burger-marquee-content');
+    if (!marquee || !marqueeContent || marquee.dataset.initialized === 'true') return;
+
+    const displayed = parseInt(
+        getComputedStyle(marquee).getPropertyValue('--marquee-elements-displayed'),
+        10
+    );
+    if (!Number.isFinite(displayed) || displayed <= 0) return;
+
+    marquee.style.setProperty('--marquee-elements', marqueeContent.children.length);
+
+    for (let i = 0; i < displayed; i++) {
+        const node = marqueeContent.children[i];
+        if (!node) break;
+        marqueeContent.appendChild(node.cloneNode(true));
+    }
+
+    marquee.dataset.initialized = 'true';
+})();
+
+(() => {
     const FIRST_FRAME = 41;
     const LAST_FRAME = 240;
     const TOTAL = LAST_FRAME - FIRST_FRAME + 1;
