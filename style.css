@@ -524,6 +524,7 @@ body {
 #burger-canvas {
     width: 100%;
     height: 100%;
+    display: block;
     object-fit: contain;
 }
 
@@ -698,7 +699,18 @@ body {
     .animation-frame {
         height: 65vh; /* Slightly taller for max impact */
         min-height: 450px;
+        justify-content: flex-start;
         background: radial-gradient(circle at center, rgba(255, 149, 0, 0.15) 0%, transparent 80%);
+    }
+
+    .tile-header.mobile-only {
+        flex: 0 0 auto;
+    }
+
+    #burger-canvas {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 0;
     }
 
     .combo-tile {

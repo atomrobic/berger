@@ -1,186 +1,129 @@
-const canvas = document.getElementById('burger-canvas');
-const context = canvas.getContext('2d');
+(() => {
+    const FIRST_FRAME = 41;
+    const LAST_FRAME = 240;
+    const TOTAL = LAST_FRAME - FIRST_FRAME + 1;
+    const FRAME = (n) =>
+        `/dist/frames/ezgif-31981f8e3c1ad0ef-jpg/ezgif-frame-${String(n).padStart(3, '0')}.jpg`;
 
-const frameCount = 240;
-const frameFolders = [
-    'ezgif-31981f8e3c1ad0ef-jpg'
-];
-const framePathCandidates = ['/dist/frames'];
-const frameExtensions = ['jpg', 'jpeg', 'png'];
-let activeFrameBasePath = '';
-const frameBaseName = (index) => `ezgif-frame-${index.toString().padStart(3, '0')}`;
-const frameUrls = (index) => {
-    const baseName = frameBaseName(index);
-    const urls = [];
-    for (const basePath of framePathCandidates) {
-        for (const folder of frameFolders) {
-            for (const ext of frameExtensions) {
-                urls.push(`${basePath}/${folder}/${baseName}.${ext}`);
+    const canvas = document.getElementById('burger-canvas');
+    const frameSection = document.querySelector('.animation-frame');
+    const bentoSection = document.querySelector('.bento-section');
+    if (!canvas || !frameSection || !bentoSection) return;
+
+    const ctx = canvas.getContext('2d');
+    const imgs = new Array(TOTAL);
+    let current = 0;
+    let rafPending = false;
+    let loaded = false;
+
+    function getNearestLoadedIndex(index) {
+        if (imgs[index] && imgs[index].complete && imgs[index].naturalWidth) return index;
+        for (let offset = 1; offset < TOTAL; offset++) {
+            const left = index - offset;
+            if (left >= 0 && imgs[left] && imgs[left].complete && imgs[left].naturalWidth) {
+                return left;
+            }
+            const right = index + offset;
+            if (right < TOTAL && imgs[right] && imgs[right].complete && imgs[right].naturalWidth) {
+                return right;
             }
         }
+        return -1;
     }
-    return urls;
-};
 
-// Preloading images
-const images = [];
-const burger = {
-    frame: 0,
-    targetFrame: 0
-};
-let lastRenderableImage = null;
+    function draw(index) {
+        const renderIndex = getNearestLoadedIndex(index);
+        if (renderIndex < 0) return;
+        const img = imgs[renderIndex];
+        const dpr = window.devicePixelRatio || 1;
+        const W = canvas.clientWidth;
+        const H = canvas.clientHeight;
 
-function preloadImages() {
-    let completedImages = 0;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
 
-    for (let i = 1; i <= frameCount; i++) {
-        const img = new Image();
-        const candidates = frameUrls(i);
-        let candidateIndex = 0;
+        const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+        const dw = img.naturalWidth * scale;
+        const dh = img.naturalHeight * scale;
+        const dx = (W - dw) / 2;
+        const dy = (H - dh) / 2;
+        ctx.drawImage(img, dx, dy, dw, dh);
+    }
 
-        const tryNextPath = () => {
-            if (candidateIndex >= candidates.length) {
-                completedImages++;
-                return;
-            }
+    function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.max(1, Math.floor(canvas.clientWidth * dpr));
+        canvas.height = Math.max(1, Math.floor(canvas.clientHeight * dpr));
+        draw(current);
+    }
 
-            const nextUrl = candidates[candidateIndex];
-            candidateIndex++;
-            img.src = nextUrl;
-        };
+    function preload() {
+        if (loaded) return;
+        loaded = true;
 
-        img.onload = () => {
-            completedImages++;
-            if (!activeFrameBasePath && candidateIndex > 0) {
-                const matched = candidates[candidateIndex - 1];
-                const matchedFolder = frameFolders.find((folder) => matched.includes(`/${folder}/`));
-                if (matchedFolder) {
-                    activeFrameBasePath = matched.split(`/${matchedFolder}/`)[0];
+        for (let frame = FIRST_FRAME; frame <= LAST_FRAME; frame++) {
+            const idx = frame - FIRST_FRAME;
+            const img = new Image();
+            img.src = FRAME(frame);
+            img.onload = () => {
+                if (frame === FIRST_FRAME) {
+                    resize();
                 }
-            }
-            if (!lastRenderableImage) {
-                lastRenderableImage = img;
-                renderBurger();
-            }
-            if (completedImages === frameCount) {
-                console.log(`Frame preload complete. Active path: ${activeFrameBasePath || 'none'}`);
-            }
-        };
-        img.onerror = tryNextPath;
-        tryNextPath();
-        images.push(img);
-    }
-}
-
-// Set canvas dimensions
-function resizeCanvas() {
-    // High DPI support based on actual rendered canvas size.
-    const rect = canvas.getBoundingClientRect();
-    const scale = window.devicePixelRatio || 1;
-    canvas.width = Math.max(1, Math.floor(rect.width * scale));
-    canvas.height = Math.max(1, Math.floor(rect.height * scale));
-    context.setTransform(scale, 0, 0, scale, 0, 0);
-    renderBurger();
-}
-
-window.addEventListener('resize', resizeCanvas);
-
-// Scroll Handling - Localized to Bento Section
-const bentoSection = document.querySelector('.bento-section');
-
-function updateScroll() {
-    if (!bentoSection) return;
-
-    const rect = bentoSection.getBoundingClientRect();
-    const windowHeight = window.innerHeight;
-    
-    // Calculate progress based on when the section enters from bottom to when it leaves top
-    // Start animation when section top is at 80% of window height
-    // End animation when section bottom is at 20% of window height
-    const startOffset = windowHeight * 0.8;
-    const endOffset = windowHeight * 0.2;
-    
-    const progressStart = rect.top - startOffset;
-    const scrollRange = rect.height + startOffset - endOffset;
-    
-    let scrollFraction = -progressStart / scrollRange;
-    scrollFraction = Math.max(0, Math.min(1, scrollFraction));
-
-    // Map to burger frames
-    burger.frame = scrollFraction * (frameCount - 1);
-    burger.targetFrame = burger.frame;
-    renderBurger();
-}
-
-let scrollTicking = false;
-let isSectionVisible = false;
-
-// Optimization: Only listen to scroll if section is in view
-const observer = new IntersectionObserver((entries) => {
-    isSectionVisible = entries[0].isIntersecting;
-}, { threshold: 0 });
-
-if (bentoSection) observer.observe(bentoSection);
-
-window.addEventListener('scroll', () => {
-    if (!isSectionVisible || scrollTicking) return;
-    scrollTicking = true;
-    requestAnimationFrame(() => {
-        updateScroll();
-        scrollTicking = false;
-    });
-}, { passive: true });
-
-function renderBurger() {
-    const frameIndex = Math.round(burger.frame);
-    const img = images[frameIndex];
-    const scale = window.devicePixelRatio || 1;
-    const canvasWidth = canvas.width / scale;
-    const canvasHeight = canvas.height / scale;
-
-    const frameToDraw = (img && img.complete && img.naturalWidth > 0) ? img : lastRenderableImage;
-
-    if (frameToDraw && frameToDraw.complete && frameToDraw.naturalWidth > 0) {
-        lastRenderableImage = frameToDraw;
-        context.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        // Fit image into a target viewport zone with mobile-first tuning.
-        const isMobile = window.innerWidth <= 768;
-        const maxWidth = canvasWidth * (isMobile ? 1.0 : 0.98); // Edge-to-edge on mobile
-        const maxHeight = canvasHeight * (isMobile ? 0.98 : 0.96);
-        const fitScale = Math.min(maxWidth / frameToDraw.width, maxHeight / frameToDraw.height);
-        const scaleBoost = isMobile ? 1.55 : 1; // High boost for 'Max Fit'
-        const drawWidth = frameToDraw.width * fitScale * scaleBoost;
-        const drawHeight = frameToDraw.height * fitScale * scaleBoost;
-
-        const x = (canvasWidth - drawWidth) / 2;
-        let y = (canvasHeight - drawHeight) / 2;
-        
-        if (isMobile) {
-            // Shift the burger up to compensate for 'Max Fit' scale pushing it off bottom
-            y -= drawHeight * 0.15; 
+            };
+            imgs[idx] = img;
         }
-
-        context.drawImage(frameToDraw, x, y, drawWidth, drawHeight);
-        
-        // Hide Veo watermark with a black rectangle
-        context.fillStyle = '#000000';
-        // The watermark is typically in the bottom right of the drawn image
-        context.fillRect(x + drawWidth - 150, y + drawHeight - 80, 150, 80);
-    } else {
-        // Show fallback only if no frame has ever loaded.
-        context.fillStyle = '#000';
-        context.fillRect(0, 0, canvasWidth, canvasHeight);
-        context.fillStyle = '#ff9500';
-        context.font = '20px Outfit';
-        context.textAlign = 'center';
-        context.fillText('Frames not found. Checked JPG/JPEG/PNG paths.', canvasWidth / 2, canvasHeight / 2);
     }
-}
 
-// Initial calls
-preloadImages();
-resizeCanvas();
-updateScroll();
-renderBurger();
+    const io = new IntersectionObserver(
+        (entries) => {
+            if (entries[0].isIntersecting) {
+                preload();
+                io.disconnect();
+            }
+        },
+        { rootMargin: '400px 0px', threshold: 0 }
+    );
+    io.observe(frameSection);
 
+    function update() {
+        rafPending = false;
+        if (!loaded) return;
+
+        const isMobile = window.innerWidth <= 768;
+        let t = 0;
+
+        if (isMobile) {
+            const rect = frameSection.getBoundingClientRect();
+            const startAt = window.innerHeight * 0.9;
+            const totalDistance = window.innerHeight + rect.height;
+            const traveled = startAt - rect.top;
+            t = Math.max(0, Math.min(1, traveled / totalDistance));
+        } else {
+            const rect = bentoSection.getBoundingClientRect();
+            const sectionH = bentoSection.offsetHeight || 1;
+            const scrolled = -(rect.top - window.innerHeight * 0.2);
+            const progressRange = sectionH * 0.8;
+            t = Math.max(0, Math.min(1, scrolled / progressRange));
+        }
+        const idx = Math.round(t * (TOTAL - 1));
+
+        if (idx !== current) {
+            current = idx;
+            draw(current);
+        }
+    }
+
+    window.addEventListener(
+        'scroll',
+        () => {
+            if (!rafPending) {
+                rafPending = true;
+                requestAnimationFrame(update);
+            }
+        },
+        { passive: true }
+    );
+
+    window.addEventListener('resize', resize);
+    setTimeout(resize, 100);
+})();
